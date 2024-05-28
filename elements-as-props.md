@@ -1,5 +1,12 @@
 # Deep Dive into Passing Elements as Props: A Misunderstood React Optimization Pattern
 
+## Prerequisites
+
+- How re-renders work in React.
+- **Element as Props** pattern in React. This article only explores how this pattern results in a re-render performance optimisation.
+
+## Introduction
+
 One of the most common re-render optimizations in React is the **Element as Props** pattern. If a *component*'s re-render triggers a re-render of an expensive child *component* that doesn't consume any *state* or *props* from the parent *component*, then that child *component*'s *element* instance can be passed as a prop to the parent *component*. The parent *component* can then inject that *element* at an appropriate *slot* in its own render result.
 
 ## Example
@@ -53,7 +60,7 @@ function ParentComponent({slot}) {
 }
 ```
 
-It is believed that the reason this pattern works is because of the *stable react element reference* of the `slot` *element* accepted as a prop. When the `ParentComponent` re-renders due to its own state update, the `slot` *element* will be *referentially stable* and that should allow React to safely skip re-rendering the `ExpensiveComponent`. Right? Sounds good, but *element referential equality* has nothing to do with React attempting a render bailout - not directly atleast.
+It is believed that the reason this pattern works is because of the *stable react element reference* of the `slot` *element* accepted as a prop. When the `ParentComponent` re-renders due to its own state update, the `slot` *element* will be *referentially stable* and that should allow React to safely skip re-rendering the `ExpensiveComponent`. Right? Sounds good, but *element referential equality* has nothing to do with React attempting a render bailout. Not directly atleast.
 
 ## Proof by contradiction
 
@@ -62,6 +69,8 @@ It is believed that the reason this pattern works is because of the *stable reac
 If an *element reference* remains *referentially stable* between re-renders, React skips re-rendering the *component* associated with that *element*.
 
 ### Contradicting examples
+
+The following examples contradict the above assumption. Nobody writes such code in production, but they are useful for illustrating my point.
 
 #### Example 1
 
@@ -139,7 +148,7 @@ Same *element* reference but different *props* reference => Component is re-rend
 
 ##### Case 2
 
-Different *element* reference but same props reference => Component is not re-rendered.
+Different *element* reference but same *props* reference => Component is not re-rendered.
 
 It is clear that what actually matters is the referential equality of the *props* object, not that of the *element* reference itself. And that makes absolute sense - When the inputs to a *component* (*props* in this case) remain the same (*same* means *referentially stable* for objects), that *component*'s render result should be the same, and therefore, it should be safe to skip re-rendering it.
 
