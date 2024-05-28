@@ -68,6 +68,8 @@ If an *element reference* remains *referentially stable* between re-renders, Rea
 - Memoize the `ExpensiveComponent`'s *element* reference so that it is forced to remain stable between re-renders.
 - Create a new *props* object in every render and inject it into the stable *element* reference.
 
+[open stackblitz sandbox](https://stackblitz.com/edit/stable-element-ref-rerender?file=src%2FApp.tsx)
+
 ```jsx
 const element = <ExpensiveComponent />;
 
@@ -100,6 +102,8 @@ The alert from `ExpensiveComponent` will appear every single time `ParentCompone
 #### Example 2
 
 This time, let's create a new *element* reference in every render, but memoize the *element*'s *props* object.
+
+[open stackblitz sandbox](https://stackblitz.com/edit/stable-props-unstable-element?file=src%2FApp.tsx)
 
 ```js
 function ParentComponent() {
